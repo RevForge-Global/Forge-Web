@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RevForge Global — Website Services</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#070707;--surface:#0F0F0F;--surface2:#181818;--surface3:#222;--border:rgba(196,155,60,0.14);--bh:rgba(196,155,60,0.45);--gold:#C49B3C;--gl:#E8C060;--gd:rgba(196,155,60,0.08);--white:#F0EBE0;--gray:#5A5248;--gray2:#8A8070;--wa:#25D366;}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--white);font-family:'Inter',sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased;}
+.app{display:flex;min-height:100vh;}
+.sidebar{width:236px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:50;transition:transform .28s cubic-bezier(.4,0,.2,1);overflow-y:auto;}
+.sidebar::-webkit-scrollbar{width:3px;}.sidebar::-webkit-scrollbar-thumb{background:var(--border);}
+.main{margin-left:236px;flex:1;display:flex;flex-direction:column;min-height:100vh;}
+.topbar{height:56px;background:var(--surface);border-bottom:1px solid var(--border);border-top:2px solid var(--gold);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:40;}
+.topbar-title{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;color:var(--gold);letter-spacing:.3px;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.view-toggle{display:flex;background:var(--surface2);border-radius:7px;padding:3px;gap:2px;}
+.vt-btn{padding:4px 11px;border-radius:5px;border:none;background:none;color:var(--gray2);font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;letter-spacing:.3px;}
+.vt-btn.active{background:var(--gold);color:#000;}
+.topbar-btn{padding:6px 14px;border-radius:7px;border:none;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;}
+.btn-gold{background:var(--gold);color:#000;}.btn-gold:hover{background:var(--gl);}
+.btn-wa-top{padding:6px 14px;background:rgba(37,211,102,.12);color:var(--wa);border:1px solid rgba(37,211,102,.25);border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;}
+.sidebar-logo{padding:18px 16px 14px;border-bottom:1px solid var(--border);}
+.logo-wordmark{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:800;letter-spacing:.5px;color:var(--gl);}
+.logo-wordmark span{color:var(--white);}
+.logo-tagline{font-size:9px;color:var(--gray);letter-spacing:2px;text-transform:uppercase;margin-top:3px;}
+.logo-line{height:1px;background:linear-gradient(90deg,var(--gold),transparent);margin-top:10px;opacity:.3;}
+.nav-section{padding:12px 10px 4px;}
+.nav-label{font-size:9px;color:var(--gray);letter-spacing:2px;text-transform:uppercase;padding:0 8px;margin-bottom:5px;font-weight:700;}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:7px;cursor:pointer;font-size:12.5px;font-weight:500;color:var(--gray2);transition:all .13s;border:none;background:none;width:100%;text-align:left;line-height:1;}
+.nav-item:hover{background:var(--surface2);color:var(--white);}
+.nav-item.active{background:rgba(196,155,60,.12);color:var(--gold);font-weight:600;}
+.nav-item .ni{font-size:14px;width:18px;text-align:center;flex-shrink:0;}
+.nav-badge{margin-left:auto;background:var(--gold);color:#000;font-size:9px;font-weight:800;padding:2px 6px;border-radius:8px;}
+.nav-badge-r{margin-left:auto;background:#F87171;color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:8px;}
+.sidebar-footer{margin-top:auto;padding:14px 16px;border-top:1px solid var(--border);}
+.admin-tag{display:flex;align-items:center;gap:10px;}
+.admin-avatar{width:30px;height:30px;border-radius:7px;background:linear-gradient(135deg,var(--gold),var(--gl));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:#000;flex-shrink:0;}
+.admin-name{font-size:12px;font-weight:700;color:var(--white);}
+.admin-role{font-size:10px;color:var(--gray2);margin-top:1px;}
+.page{display:none;}.page.active{display:block;}
+.content{padding:28px 24px;flex:1;}
+.ph{font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:800;letter-spacing:-.5px;margin-bottom:6px;}
+.ps{color:var(--gray2);font-size:13px;margin-bottom:24px;line-height:1.6;}
+.filter-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:20px;}
+.filter-row{display:flex;gap:6px;flex-wrap:wrap;}
+.filter-btn{padding:5px 13px;border-radius:20px;border:1px solid var(--border);background:none;color:var(--gray2);font-size:11.5px;font-weight:600;cursor:pointer;transition:all .13s;}
+.filter-btn:hover,.filter-btn.active{border-color:var(--gold);color:var(--gold);background:var(--gd);}
+.search-box{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:7px 12px;min-width:210px;}
+.search-box input{background:none;border:none;outline:none;color:var(--white);font-size:12.5px;width:100%;}
+.search-box input::placeholder{color:var(--gray);}
+.catalog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:14px;}
+.cat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:all .2s;cursor:pointer;}
+.cat-card:hover{border-color:var(--bh);transform:translateY(-2px);box-shadow:0 8px 32px rgba(196,155,60,.1);}
+.cat-card-top{height:130px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+.cat-card-top img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.5;transition:opacity .3s,transform .4s;}
+.cat-card:hover .cat-card-top img{opacity:.65;transform:scale(1.05);}
+.cat-top-inner{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.cat-badge{font-size:9px;font-weight:800;padding:2px 7px;border-radius:8px;letter-spacing:.8px;text-transform:uppercase;}
+.bp{background:rgba(245,158,11,.18);color:#FBBF24;}.bn{background:rgba(74,222,128,.18);color:#4ADE80;}.bh{background:rgba(248,113,113,.18);color:#F87171;}
+.cat-body{padding:14px 16px;}
+.cat-num{font-size:9.5px;color:var(--gray);font-weight:700;letter-spacing:1.2px;text-transform:uppercase;margin-bottom:4px;}
+.cat-name{font-family:'Space Grotesk',sans-serif;font-size:14.5px;font-weight:800;margin-bottom:5px;letter-spacing:-.2px;}
+.cat-desc{font-size:11.5px;color:var(--gray2);line-height:1.55;margin-bottom:12px;}
+.cat-footer{display:flex;align-items:center;justify-content:space-between;}
+.price-from{font-size:9.5px;color:var(--gray);display:block;margin-bottom:1px;letter-spacing:.5px;text-transform:uppercase;}
+.price-val{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:800;color:var(--gold);}
+.cat-actions{display:flex;gap:5px;}
+.btn-ord{padding:6px 13px;background:var(--gold);color:#000;border:none;border-radius:6px;font-size:10.5px;font-weight:800;cursor:pointer;transition:all .15s;letter-spacing:.3px;}
+.btn-ord:hover{background:var(--gl);}
+.btn-wai{padding:6px 9px;background:rgba(37,211,102,.1);color:var(--wa);border:1px solid rgba(37,211,102,.22);border-radius:6px;font-size:13px;cursor:pointer;transition:all .15s;}
+.catalog-list{display:flex;flex-direction:column;gap:6px;}
+.list-item{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:13px 18px;display:flex;align-items:center;gap:14px;transition:all .13s;cursor:pointer;}
+.list-item:hover{border-color:var(--bh);background:var(--surface2);}
+.list-icon{font-size:22px;width:36px;text-align:center;flex-shrink:0;}
+.list-info{flex:1;min-width:0;}
+.list-name{font-weight:700;font-size:13.5px;margin-bottom:2px;}
+.list-desc{font-size:11.5px;color:var(--gray2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.list-price{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:800;color:var(--gold);min-width:80px;text-align:right;flex-shrink:0;}
+.list-acts{display:flex;gap:5px;align-items:center;flex-shrink:0;}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:center;justify-content:center;backdrop-filter:blur(6px);}
+.modal-overlay.show{display:flex;}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:14px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;padding:28px;}
+.modal-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:22px;}
+.m-icon{font-size:44px;margin-bottom:10px;}
+.m-title{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:800;margin-bottom:5px;letter-spacing:-.3px;}
+.m-sub{color:var(--gray2);font-size:13px;line-height:1.6;}
+.modal-close{background:var(--surface2);border:1px solid var(--border);color:var(--gray2);width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .13s;}
+.modal-close:hover{border-color:var(--gold);color:var(--gold);}
+.modal-sec{margin-bottom:18px;}
+.modal-sec-t{font-size:10px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:9px;}
+.feat-list{display:flex;flex-direction:column;gap:5px;}
+.feat-item{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--gray2);}
+.feat-item::before{content:'✓';color:var(--gold);font-weight:800;font-size:11px;}
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.tier{background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:12px;text-align:center;position:relative;}
+.tier.rec{border-color:var(--gold);}
+.tier-rec-l{position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:var(--gold);color:#000;font-size:8px;font-weight:800;padding:2px 8px;border-radius:8px;letter-spacing:.8px;white-space:nowrap;}
+.tier-n{font-size:10px;color:var(--gray);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;}
+.tier-p{font-family:'Space Grotesk',sans-serif;font-size:19px;font-weight:800;margin-bottom:3px;}
+.tier-t{font-size:10px;color:var(--gray);}
+.modal-acts{display:flex;gap:8px;margin-top:22px;}
+.m-btn-p{flex:1;padding:11px;background:var(--gold);color:#000;border:none;border-radius:8px;font-size:13.5px;font-weight:800;cursor:pointer;transition:all .15s;}
+.m-btn-p:hover{background:var(--gl);}
+.m-btn-w{padding:11px 18px;background:rgba(37,211,102,.1);color:var(--wa);border:1px solid rgba(37,211,102,.22);border-radius:8px;font-size:13.5px;font-weight:700;cursor:pointer;transition:all .15s;}
+.pin-overlay{display:none;position:fixed;inset:0;background:rgba(7,7,7,.95);z-index:100;align-items:center;justify-content:center;backdrop-filter:blur(8px);}
+.pin-overlay.show{display:flex;}
+.pin-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:36px;width:330px;text-align:center;}
+.pin-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:12px 16px;color:var(--white);font-size:16px;font-weight:700;text-align:center;letter-spacing:4px;outline:none;transition:border-color .15s;margin-bottom:12px;}
+.pin-input:focus{border-color:var(--gold);}
+.pin-btn{width:100%;padding:12px;background:var(--gold);color:#000;border:none;border-radius:9px;font-size:14px;font-weight:800;cursor:pointer;}
+.pin-btn:hover{background:var(--gl);}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:18px 20px;}
+.stat-lbl{font-size:10px;color:var(--gray);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:7px;font-weight:600;}
+.stat-val{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:800;letter-spacing:-1px;margin-bottom:4px;}
+.stat-ch{font-size:11px;color:#4ADE80;}
+.tw{background:var(--surface);border:1px solid var(--border);border-radius:11px;overflow:hidden;margin-bottom:22px;}
+table{width:100%;border-collapse:collapse;}
+thead{background:var(--surface2);}
+th{padding:11px 15px;text-align:left;font-size:10px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:1.2px;}
+td{padding:12px 15px;font-size:12.5px;border-top:1px solid var(--border);}
+tr:hover td{background:rgba(255,255,255,.015);}
+.sb{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:20px;font-size:10.5px;font-weight:700;}
+.s-new{background:rgba(96,165,250,.15);color:#60A5FA;}.s-prog{background:rgba(251,191,36,.15);color:#FBBF24;}.s-done{background:rgba(74,222,128,.15);color:#4ADE80;}.s-hold{background:rgba(100,116,139,.15);color:var(--gray2);}
+.sub-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;}
+.sub-card{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:15px 17px;display:flex;align-items:center;gap:12px;transition:border-color .15s;}
+.sub-card:hover{border-color:var(--bh);}
+.sub-av{width:36px;height:36px;border-radius:9px;background:linear-gradient(135deg,var(--gold),var(--gl));display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:#000;flex-shrink:0;}
+.sub-nm{font-weight:700;font-size:12.5px;}.sub-em{font-size:10px;color:var(--gray);margin-top:1px;}.sub-tp{font-size:9.5px;color:var(--gold);font-weight:700;margin-top:3px;text-transform:uppercase;letter-spacing:.5px;}
+.ic-btn{width:27px;height:27px;border-radius:6px;border:1px solid var(--border);background:none;color:var(--gray2);cursor:pointer;font-size:11px;display:flex;align-items:center;justify-content:center;transition:all .13s;}
+.ic-btn:hover{border-color:var(--gold);color:var(--gold);}
+.pg{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:12px;}
+.pc{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:16px;}
+.pc-nm{font-family:'Space Grotesk',sans-serif;font-size:12.5px;font-weight:800;margin-bottom:9px;}
+.tr-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border);font-size:11px;}
+.tr-row:last-child{border-bottom:none;}
+.tr-nm{color:var(--gray2);}.tr-pr{font-weight:800;color:var(--gold);font-family:'Space Grotesk',sans-serif;font-size:12px;}
+.ep-btn{width:100%;margin-top:9px;padding:6px;background:var(--surface2);border:1px solid var(--border);color:var(--gray2);border-radius:7px;font-size:10px;font-weight:600;cursor:pointer;transition:all .13s;}
+.ep-btn:hover{border-color:var(--gold);color:var(--gold);}
+.fw{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;margin-bottom:20px;}
+.form-row{display:flex;gap:10px;flex-wrap:wrap;}
+.fg{flex:1;min-width:180px;margin-bottom:14px;}
+.fl{font-size:10px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:6px;display:block;}
+.fi{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 13px;color:var(--white);font-size:13px;outline:none;transition:border-color .15s;}
+.fi:focus{border-color:var(--gold);}
+textarea.fi{resize:vertical;}
+.fs{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 13px;color:var(--white);font-size:13px;outline:none;cursor:pointer;}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--surface);border:1px solid var(--gold);border-radius:9px;padding:12px 18px;font-size:13px;font-weight:600;color:var(--gold);z-index:500;transform:translateY(80px);opacity:0;transition:all .28s cubic-bezier(.4,0,.2,1);}
+.toast.show{transform:translateY(0);opacity:1;}
+.tt{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:11px 13px;font-size:12.5px;font-weight:600;color:var(--white);display:flex;align-items:center;gap:7px;transition:border-color .13s;}
+.tt:hover{border-color:var(--bh);}
+.tt span{color:var(--gold);font-size:10px;}
+.sd{display:flex;align-items:center;gap:10px;margin:6px 0 16px;font-size:10px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:2px;}
+.sd::after{content:'';flex:1;height:1px;background:var(--border);}
+@media(max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0}.stats-row{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.stats-row{grid-template-columns:1fr 1fr}.content{padding:18px 14px}.catalog-grid{grid-template-columns:1fr}.tiers{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="pin-overlay" id="pin-overlay">
+  <div class="pin-box">
+    <div style="font-size:38px;margin-bottom:14px;">🔐</div>
+    <div style="font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:800;margin-bottom:6px;">Admin Access</div>
+    <div style="font-size:12px;color:var(--gray2);margin-bottom:22px;line-height:1.6;">Enter your PIN to access the admin panel.</div>
+    <input class="pin-input" type="password" id="pin-input" maxlength="6" placeholder="• • • •" onkeydown="if(event.key==='Enter')checkPin()">
+    <button class="pin-btn" onclick="checkPin()">Unlock Admin</button>
+    <div id="pin-error" style="font-size:12px;color:#F87171;margin-top:10px;height:16px;"></div>
+  </div>
+</div>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-wordmark">REVFORGE <span>GLOBAL</span></div>
+    <div class="logo-tagline">Precision · Systems · Execution</div>
+    <div class="logo-line"></div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Catalog</div>
+    <button class="nav-item active" onclick="showPage('catalog')"><span class="ni">🌐</span> All Website Types<span class="nav-badge">80</span></button>
+    <button class="nav-item" onclick="showPage('pricing-pub')"><span class="ni">💰</span> Pricing</button>
+    <button class="nav-item" onclick="showPage('tech-stack')"><span class="ni">⚙️</span> Technology Stack</button>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Services</div>
+    <button class="nav-item" onclick="showPage('youtube-page')"><span class="ni">▶️</span> YouTube & Demos</button>
+    <button class="nav-item" onclick="showPage('proposal-page')"><span class="ni">📝</span> Get a Proposal</button>
+    <button class="nav-item" onclick="showPage('subscribe')"><span class="ni">📧</span> Order / Contact</button>
+    <button class="nav-item" onclick="showPage('terms-page')"><span class="ni">📋</span> Terms & Conditions</button>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Admin</div>
+    <button class="nav-item" onclick="requireAdmin('dashboard')"><span class="ni">📊</span> Dashboard</button>
+    <button class="nav-item" onclick="requireAdmin('orders')"><span class="ni">📦</span> Orders<span class="nav-badge-r">3</span></button>
+    <button class="nav-item" onclick="requireAdmin('subscribers')"><span class="ni">👥</span> Subscribers</button>
+    <button class="nav-item" onclick="requireAdmin('manage-pricing')"><span class="ni">🏷️</span> Manage Pricing</button>
+  </div>
+  <div class="nav-section">
+    <div class="nav-label">Connect</div>
+    <a href="https://wa.me/8801350058446" target="_blank" style="text-decoration:none;"><button class="nav-item" style="color:var(--wa);"><span class="ni">💬</span> WhatsApp</button></a>
+    <a href="mailto:globalrevforge1@gmail.com" target="_blank" style="text-decoration:none;"><button class="nav-item"><span class="ni">✉️</span> Email Us</button></a>
+    <a href="https://www.youtube.com/@RevForgeGlobal" target="_blank" style="text-decoration:none;"><button class="nav-item" style="color:#FF4444;"><span class="ni">▶️</span> YouTube</button></a>
+    <a href="https://www.facebook.com/profile.php?id=61576694910092" target="_blank" style="text-decoration:none;"><button class="nav-item" style="color:#1877F2;"><span class="ni">📘</span> FB Page</button></a>
+    <a href="https://facebook.com/groups/1002512195967701/" target="_blank" style="text-decoration:none;"><button class="nav-item" style="color:#1877F2;"><span class="ni">👥</span> FB Community</button></a>
+    <a href="https://www.instagram.com/revforgeglobe?igsh=MTM1NmE5dW9qbmRneA==" target="_blank" style="text-decoration:none;"><button class="nav-item" style="color:#E1306C;"><span class="ni">📸</span> Instagram</button></a>
+    <a href="https://x.com/RabiulHasahkro" target="_blank" style="text-decoration:none;"><button class="nav-item"><span class="ni">𝕏</span> Twitter / X</button></a>
+    <a href="https://www.linkedin.com/in/md-rabiul-hasan-a0a880412" target="_blank" style="text-decoration:none;"><button class="nav-item" style="color:#0A66C2;"><span class="ni">💼</span> LinkedIn</button></a>
+    <a href="https://maps.app.goo.gl/7imqJhaiWJRGEtiq6" target="_blank" style="text-decoration:none;"><button class="nav-item" style="color:#EA4335;"><span class="ni">📍</span> Find Us</button></a>
+  </div>
+  <div class="sidebar-footer">
+    <div class="admin-tag">
+      <div class="admin-avatar">R</div>
+      <div><div class="admin-name">Md Rabiul Hasan</div><div class="admin-role">Founder & CEO</div></div>
+    </div>
+  </div>
+</div>
+<div class="main">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button onclick="document.getElementById('sidebar').classList.toggle('open')" style="display:none;background:none;border:none;color:var(--white);font-size:18px;cursor:pointer;" id="menu-btn">☰</button>
+      <div class="topbar-title" id="page-title">All Website Types</div>
+    </div>
+    <div class="topbar-right">
+      <div class="view-toggle">
+        <button class="vt-btn active" id="vt-grid" onclick="setView('grid')">⊞ Grid</button>
+        <button class="vt-btn" id="vt-list" onclick="setView('list')">☰ List</button>
+      </div>
+      <a href="https://www.youtube.com/@RevForgeGlobal" target="_blank" style="text-decoration:none;"><button class="topbar-btn" style="background:rgba(255,50,50,.1);color:#FF4444;border:1px solid rgba(255,50,50,.22);">▶️ YouTube</button></a>
+      <a href="https://wa.me/8801350058446" target="_blank" style="text-decoration:none;"><button class="btn-wa-top">💬 WhatsApp</button></a>
+    </div>
+  </div>
+  <div class="content">
+    <!-- CATALOG PAGE -->
+    <div class="page active" id="page-catalog">
+      <div class="filter-bar">
+        <div class="filter-row">
+          <button class="filter-btn active" onclick="filterCat('all',this)">All (80)</button>
+          <button class="filter-btn" onclick="filterCat('business',this)">🏢 Business</button>
+          <button class="filter-btn" onclick="filterCat('education',this)">🎓 Education</button>
+          <button class="filter-btn" onclick="filterCat('media',this)">🎬 Media</button>
+          <button class="filter-btn" onclick="filterCat('social',this)">📱 Social</button>
+          <button class="filter-btn" onclick="filterCat('tools',this)">🛠️ Tools</button>
+          <button class="filter-btn" onclick="filterCat('finance',this)">💰 Finance</button>
+          <button class="filter-btn" onclick="filterCat('health',this)">🏥 Health</button>
+          <button class="filter-btn" onclick="filterCat('gaming',this)">🎮 Gaming</button>
+          <button class="filter-btn" onclick="filterCat('misc',this)">🌍 Misc</button>
+        </div>
+        <div class="search-box">
+          <span style="color:var(--gray);font-size:13px;">🔍</span>
+          <input type="text" placeholder="Search 80 website types..." id="search-input" oninput="searchCat(this.value)">
+        </div>
+      </div>
+      <div class="catalog-grid" id="catalog-container"></div>
+      <div style="margin-top:44px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px 24px;text-align:center;">
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:800;margin-bottom:4px;">RevForge Global</div>
+        <p style="font-size:12px;color:var(--gray2);margin-bottom:4px;">Global AI · Cybersecurity · Revenue Intelligence · Technology</p>
+        <p style="font-size:11px;color:var(--gray);margin-bottom:20px;">USA | UK | EMEA | Bangladesh</p>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:14px;">
+          <a href="https://www.youtube.com/@RevForgeGlobal" target="_blank" style="text-decoration:none;"><button style="display:flex;align-items:center;gap:7px;padding:8px 15px;background:rgba(255,0,0,.1);border:1px solid rgba(255,0,0,.22);border-radius:7px;color:#FF4444;font-size:12px;font-weight:700;cursor:pointer;">▶️ YouTube</button></a>
+          <a href="https://www.facebook.com/profile.php?id=61576694910092" target="_blank" style="text-decoration:none;"><button style="display:flex;align-items:center;gap:7px;padding:8px 15px;background:rgba(24,119,242,.1);border:1px solid rgba(24,119,242,.22);border-radius:7px;color:#1877F2;font-size:12px;font-weight:700;cursor:pointer;">📘 FB Page</button></a>
+          <a href="https://facebook.com/groups/1002512195967701/" target="_blank" style="text-decoration:none;"><button style="display:flex;align-items:center;gap:7px;padding:8px 15px;background:rgba(24,119,242,.1);border:1px solid rgba(24,119,242,.22);border-radius:7px;color:#1877F2;font-size:12px;font-weight:700;cursor:pointer;">👥 Community — 20% Off</button></a>
+          <a href="https://www.instagram.com/revforgeglobe?igsh=MTM1NmE5dW9qbmRneA==" target="_blank" style="text-decoration:none;"><button style="display:flex;align-items:center;gap:7px;padding:8px 15px;background:rgba(225,48,108,.1);border:1px solid rgba(225,48,108,.22);border-radius:7px;color:#E1306C;font-size:12px;font-weight:700;cursor:pointer;">📸 Instagram</button></a>
+          <a href="https://x.com/RabiulHasahkro" target="_blank" style="text-decoration:none;"><button style="display:flex;align-items:center;gap:7px;padding:8px 15px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:7px;color:#F0F0F0;font-size:12px;font-weight:700;cursor:pointer;">𝕏 Twitter</button></a>
+          <a href="https://www.linkedin.com/in/md-rabiul-hasan-a0a880412" target="_blank" style="text-decoration:none;"><button style="display:flex;align-items:center;gap:7px;padding:8px 15px;background:rgba(10,102,194,.1);border:1px solid rgba(10,102,194,.22);border-radius:7px;color:#0A66C2;font-size:12px;font-weight:700;cursor:pointer;">💼 LinkedIn</button></a>
+          <a href="https://revforge-global.github.io/Revforge-prime/" target="_blank" style="text-decoration:none;"><button style="display:flex;align-items:center;gap:7px;padding:8px 15px;background:var(--gd);border:1px solid var(--border);border-radius:7px;color:var(--gold);font-size:12px;font-weight:700;cursor:pointer;">🌐 Website</button></a>
+          <a href="https://wa.me/8801350058446" target="_blank" style="text-decoration:none;"><button style="display:flex;align-items:center;gap:7px;padding:8px 15px;background:rgba(37,211,102,.1);border:1px solid rgba(37,211,102,.22);border-radius:7px;color:var(--wa);font-size:12px;font-weight:700;cursor:pointer;">💬 WhatsApp</button></a>
+        </div>
+        <p style="font-size:11px;color:var(--gray);">🎁 Join our FB Community & get <strong style="color:var(--gold);">20% lifetime discount</strong> on all services</p>
+      </div>
+    </div>
+
+    <!-- ORDER/CONTACT PAGE -->
+    <div class="page" id="page-subscribe">
+      <div style="max-width:640px;">
+        <div class="fw" style="border-radius:14px;padding:24px;">
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">
+            <div style="width:48px;height:48px;border-radius:11px;background:linear-gradient(135deg,var(--gold),var(--gl));display:flex;align-items:center;justify-content:center;font-weight:900;font-size:18px;color:#000;flex-shrink:0;">R</div>
+            <div>
+              <div style="font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:800;">Md Rabiul Hasan</div>
+              <div style="font-size:11.5px;color:var(--gold);font-weight:600;">Founder & CEO — RevForge Global</div>
+              <div style="font-size:10.5px;color:var(--gray);">Python Developer · Revenue Engineer · AI Architect</div>
+            </div>
+          </div>
+          <p style="font-size:12.5px;color:var(--gray2);line-height:1.7;margin-bottom:12px;">RevForge Global is a Global AI, Cybersecurity, Revenue Intelligence & Technology Company helping businesses scale, automate, secure, and grow through intelligent systems and digital innovation.</p>
+          <p style="font-size:11px;color:var(--gray);margin-bottom:12px;">🌍 USA | UK | EMEA | Bangladesh</p>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;">
+            <a href="https://wa.me/8801350058446" target="_blank" style="text-decoration:none;"><span style="display:inline-flex;align-items:center;gap:5px;padding:4px 11px;background:rgba(37,211,102,.1);border:1px solid rgba(37,211,102,.22);border-radius:20px;color:var(--wa);font-size:11px;font-weight:700;">💬 +880 1350-058446</span></a>
+            <a href="mailto:globalrevforge1@gmail.com" target="_blank" style="text-decoration:none;"><span style="display:inline-flex;align-items:center;gap:5px;padding:4px 11px;background:var(--gd);border:1px solid var(--border);border-radius:20px;color:var(--gold);font-size:11px;font-weight:700;">✉️ globalrevforge1@gmail.com</span></a>
+            <a href="https://www.linkedin.com/in/md-rabiul-hasan-a0a880412" target="_blank" style="text-decoration:none;"><span style="display:inline-flex;align-items:center;gap:5px;padding:4px 11px;background:rgba(10,102,194,.1);border:1px solid rgba(10,102,194,.22);border-radius:20px;color:#0A66C2;font-size:11px;font-weight:700;">💼 LinkedIn</span></a>
+            <a href="https://maps.app.goo.gl/7imqJhaiWJRGEtiq6" target="_blank" style="text-decoration:none;"><span style="display:inline-flex;align-items:center;gap:5px;padding:4px 11px;background:rgba(234,67,53,.1);border:1px solid rgba(234,67,53,.22);border-radius:20px;color:#EA4335;font-size:11px;font-weight:700;">📍 Google Maps</span></a>
+          </div>
+        </div>
+        <div style="border-radius:12px;overflow:hidden;border:1px solid var(--border);margin-bottom:20px;">
+          <iframe src="https://maps.google.com/maps?q=RevForge+Global+Dhaka+Bangladesh&output=embed" width="100%" height="190" style="border:0;display:block;" allowfullscreen="" loading="lazy"></iframe>
+        </div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:19px;font-weight:800;margin-bottom:5px;">Get a Custom Quote</div>
+        <p style="color:var(--gray2);font-size:13px;margin-bottom:16px;">Tell us what you need and we'll reach out with a custom quote within 24hrs.</p>
+        <div class="fw">
+          <div class="form-row">
+            <div class="fg"><label class="fl">Full Name</label><input class="fi" type="text" placeholder="Your name" id="sub-name"></div>
+            <div class="fg"><label class="fl">Email</label><input class="fi" type="email" placeholder="you@email.com" id="sub-email"></div>
+          </div>
+          <div class="form-row">
+            <div class="fg"><label class="fl">WhatsApp Number</label><input class="fi" type="text" placeholder="+880..." id="sub-phone"></div>
+            <div class="fg"><label class="fl">Website Type</label><select class="fs" id="sub-type-select"><option value="">Select a type...</option></select></div>
+          </div>
+          <div class="fg" style="margin-bottom:14px;"><label class="fl">Budget Range</label>
+            <select class="fs" id="sub-budget">
+              <option>$100 – $299 (Starter)</option><option>$300 – $699 (Standard)</option>
+              <option>$700 – $1,499 (Business)</option><option>$1,500+ (Enterprise)</option>
+            </select>
+          </div>
+          <button class="btn-gold topbar-btn" style="width:100%;padding:12px;font-size:13.5px;" onclick="submitSubscribe()">🚀 Subscribe & Get Custom Quote</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRICING PUBLIC -->
+    <div class="page" id="page-pricing-pub">
+      <div class="ph" style="color:var(--gold);">Transparent Pricing</div>
+      <p class="ps">Every website type has 3 tiers. Pick what fits your budget.</p>
+      <div class="pg" id="pricing-pub-container"></div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="page" id="page-dashboard">
+      <div style="background:rgba(196,155,60,.06);border:1px solid var(--border);border-radius:10px;padding:11px 15px;margin-bottom:20px;font-size:12px;color:var(--gray2);">📊 Admin Dashboard — <span style="color:var(--gold);">Sample data for demonstration.</span> Connect a backend for live metrics.</div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-lbl">Total Revenue</div><div class="stat-val" style="color:var(--gold);">$12,840</div><div class="stat-ch">↑ 24% this month</div></div>
+        <div class="stat-card"><div class="stat-lbl">Active Orders</div><div class="stat-val" style="color:#FBBF24;">7</div><div class="stat-ch">↑ 3 new this week</div></div>
+        <div class="stat-card"><div class="stat-lbl">Subscribers</div><div class="stat-val" style="color:var(--gold);">143</div><div class="stat-ch">↑ 18 this week</div></div>
+        <div class="stat-card"><div class="stat-lbl">Conversion</div><div class="stat-val" style="color:#4ADE80;">31%</div><div class="stat-ch">↑ 4% vs last month</div></div>
+      </div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:800;margin-bottom:14px;">Recent Orders</div>
+      <div class="tw">
+        <table><thead><tr><th>#</th><th>Client</th><th>Website Type</th><th>Amount</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>#1041</td><td>Mehdi Rahman</td><td>E-Commerce Store</td><td style="color:var(--gold);font-weight:700;">$699</td><td><span class="sb s-prog">⚡ In Progress</span></td></tr>
+          <tr><td>#1040</td><td>Sarah K.</td><td>Portfolio</td><td style="color:var(--gold);font-weight:700;">$299</td><td><span class="sb s-done">✓ Done</span></td></tr>
+          <tr><td>#1039</td><td>Alex T.</td><td>SaaS Web App</td><td style="color:var(--gold);font-weight:700;">$1,499</td><td><span class="sb s-new">● New</span></td></tr>
+          <tr><td>#1038</td><td>Nadia Islam</td><td>Blog / News</td><td style="color:var(--gold);font-weight:700;">$149</td><td><span class="sb s-done">✓ Done</span></td></tr>
+          <tr><td>#1037</td><td>James O.</td><td>Job Board</td><td style="color:var(--gold);font-weight:700;">$899</td><td><span class="sb s-hold">⏸ On Hold</span></td></tr>
+        </tbody></table>
+      </div>
+    </div>
+
+    <!-- ORDERS -->
+    <div class="page" id="page-orders">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:800;">All Orders</div>
+        <button class="btn-gold topbar-btn" style="font-size:11.5px;padding:6px 14px;">+ New Order</button>
+      </div>
+      <div class="tw">
+        <table><thead><tr><th>#</th><th>Client</th><th>Type</th><th>Tier</th><th>Amount</th><th>Date</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+          <tr><td>#1041</td><td>Mehdi Rahman</td><td>E-Commerce Store</td><td>Business</td><td style="color:var(--gold);font-weight:700;">$699</td><td style="color:var(--gray2);">Jun 10</td><td><span class="sb s-prog">⚡ In Progress</span></td><td><button class="ic-btn">💬</button></td></tr>
+          <tr><td>#1040</td><td>Sarah K.</td><td>Portfolio</td><td>Standard</td><td style="color:var(--gold);font-weight:700;">$299</td><td style="color:var(--gray2);">Jun 8</td><td><span class="sb s-done">✓ Done</span></td><td><button class="ic-btn">💬</button></td></tr>
+          <tr><td>#1039</td><td>Alex T.</td><td>SaaS Web App</td><td>Enterprise</td><td style="color:var(--gold);font-weight:700;">$1,499</td><td style="color:var(--gray2);">Jun 7</td><td><span class="sb s-new">● New</span></td><td><button class="ic-btn">💬</button></td></tr>
+          <tr><td>#1038</td><td>Nadia Islam</td><td>Blog / News</td><td>Starter</td><td style="color:var(--gold);font-weight:700;">$149</td><td style="color:var(--gray2);">Jun 5</td><td><span class="sb s-done">✓ Done</span></td><td><button class="ic-btn">💬</button></td></tr>
+          <tr><td>#1037</td><td>James O.</td><td>Job Board</td><td>Business</td><td style="color:var(--gold);font-weight:700;">$899</td><td style="color:var(--gray2);">Jun 3</td><td><span class="sb s-hold">⏸ On Hold</span></td><td><button class="ic-btn">💬</button></td></tr>
+          <tr><td>#1036</td><td>Priya S.</td><td>Educational LMS</td><td>Standard</td><td style="color:var(--gold);font-weight:700;">$599</td><td style="color:var(--gray2);">Jun 1</td><td><span class="sb s-done">✓ Done</span></td><td><button class="ic-btn">💬</button></td></tr>
+        </tbody></table>
+      </div>
+    </div>
+
+    <!-- SUBSCRIBERS -->
+    <div class="page" id="page-subscribers">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;">
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:800;">Subscribers</div>
+        <button class="btn-gold topbar-btn" style="font-size:11.5px;padding:6px 14px;" onclick="showToast('📧 Export ready!')">⬇ Export CSV</button>
+      </div>
+      <div class="sub-grid" id="sub-grid"></div>
+    </div>
+
+    <!-- MANAGE PRICING -->
+    <div class="page" id="page-manage-pricing">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:800;">Manage Pricing</div>
+        <button class="btn-gold topbar-btn" style="font-size:11.5px;padding:6px 14px;" onclick="showToast('✅ Pricing saved!')">💾 Save All</button>
+      </div>
+      <p style="color:var(--gray2);font-size:13px;margin-bottom:18px;">Edit Starter / Standard / Business prices for each type.</p>
+      <div class="pg" id="manage-pricing-container"></div>
+    </div>
+    <!-- TECH STACK -->
+    <div class="page" id="page-tech-stack">
+      <div class="ph" style="color:var(--gold);">Our Technology Stack</div>
+      <p class="ps">Every website we build uses industry-grade, production-ready technologies.</p>
+      <div style="margin-bottom:26px;"><div class="sd">🖥️ Frontend Development</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(142px,1fr));gap:8px;" id="fe-grid"></div></div>
+      <div style="margin-bottom:26px;"><div class="sd">🔧 Backend Development</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(142px,1fr));gap:8px;" id="be-grid"></div></div>
+      <div style="margin-bottom:26px;"><div class="sd">🗄️ Databases & Storage</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(142px,1fr));gap:8px;" id="db-grid"></div></div>
+      <div style="margin-bottom:26px;"><div class="sd">🤖 AI & Automation</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(142px,1fr));gap:8px;" id="ai-grid"></div></div>
+      <div style="margin-bottom:26px;"><div class="sd">💳 Payment Gateways</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(142px,1fr));gap:8px;" id="pay-grid"></div></div>
+      <div style="margin-bottom:26px;"><div class="sd">☁️ Hosting & DevOps</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(142px,1fr));gap:8px;" id="host-grid"></div></div>
+      <div style="margin-bottom:26px;"><div class="sd">🛒 CMS & E-Commerce</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(142px,1fr));gap:8px;" id="cms-grid"></div></div>
+      <div style="margin-bottom:26px;"><div class="sd">🛠️ Dev Tools & Design</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(142px,1fr));gap:8px;" id="dev-grid"></div></div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;">
+        <p style="color:var(--gray2);font-size:13px;margin-bottom:12px;">Need a custom tech stack for your project?</p>
+        <a href="https://wa.me/8801350058446" target="_blank" style="text-decoration:none;"><button class="m-btn-p" style="padding:11px 28px;">💬 Discuss Your Project</button></a>
+      </div>
+    </div>
+
+    <!-- YOUTUBE -->
+    <div class="page" id="page-youtube-page">
+      <div class="ph" style="color:var(--gold);">YouTube & Demo Videos</div>
+      <p class="ps">Watch our live demos, product showcases, and company insights before you order.</p>
+      <div style="background:linear-gradient(135deg,#130000,#1E0700);border:1px solid rgba(255,50,50,.2);border-radius:14px;padding:26px;margin-bottom:20px;text-align:center;">
+        <div style="font-size:42px;margin-bottom:11px;">📺</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:800;color:#FF4444;margin-bottom:8px;">RevForge Global — YouTube Channel</div>
+        <p style="color:var(--gray2);font-size:13px;margin-bottom:18px;max-width:440px;margin-left:auto;margin-right:auto;line-height:1.6;">Subscribe to see live product demos, AI tool builds, Python tutorials, and behind-the-scenes of how we build revenue systems.</p>
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+          <a href="https://www.youtube.com/@RevForgeGlobal" target="_blank" style="text-decoration:none;"><button style="padding:11px 24px;background:#FF0000;color:white;border:none;border-radius:8px;font-size:13px;font-weight:800;cursor:pointer;">🔔 Subscribe Now</button></a>
+          <a href="https://www.youtube.com/@RevForgeGlobal" target="_blank" style="text-decoration:none;"><button style="padding:11px 24px;background:rgba(255,0,0,.1);color:#FF4444;border:1px solid rgba(255,0,0,.22);border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;">▶️ Watch Demos</button></a>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:12px;margin-bottom:22px;" id="yt-cards"></div>
+      <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;text-align:center;">
+        <p style="font-size:13px;color:var(--gray2);margin-bottom:4px;">🎁 Subscribe + Join our Facebook Community</p>
+        <p style="font-size:11.5px;color:var(--gray);margin-bottom:14px;">Get <strong style="color:var(--gold);">20% lifetime discount</strong> on all RevForge services</p>
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+          <a href="https://www.youtube.com/@RevForgeGlobal" target="_blank" style="text-decoration:none;"><button style="padding:8px 15px;background:rgba(255,0,0,.1);color:#FF4444;border:1px solid rgba(255,0,0,.22);border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;">▶️ YouTube</button></a>
+          <a href="https://www.facebook.com/profile.php?id=61576694910092" target="_blank" style="text-decoration:none;"><button style="padding:8px 15px;background:rgba(24,119,242,.1);color:#1877F2;border:1px solid rgba(24,119,242,.22);border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;">📘 FB Page</button></a>
+          <a href="https://facebook.com/groups/1002512195967701/" target="_blank" style="text-decoration:none;"><button style="padding:8px 15px;background:rgba(24,119,242,.1);color:#1877F2;border:1px solid rgba(24,119,242,.22);border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;">👥 Community — 20% Off</button></a>
+          <a href="https://www.instagram.com/revforgeglobe?igsh=MTM1NmE5dW9qbmRneA==" target="_blank" style="text-decoration:none;"><button style="padding:8px 15px;background:rgba(225,48,108,.1);color:#E1306C;border:1px solid rgba(225,48,108,.22);border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;">📸 Instagram</button></a>
+        </div>
+      </div>
+    </div>
+
+    <!-- TERMS -->
+    <div class="page" id="page-terms-page">
+      <div class="ph" style="color:var(--gold);">Terms & Conditions</div>
+      <p class="ps">Please read carefully before placing an order. By working with us, you agree to these terms.</p>
+      <div style="display:flex;flex-direction:column;gap:12px;max-width:700px;">
+        <div style="background:linear-gradient(135deg,#130a00,#1e0f00);border:1px solid rgba(196,155,60,.3);border-radius:12px;padding:20px;"><div style="font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:800;color:var(--gold);margin-bottom:7px;">💰 1. Advance Payment Policy</div><p style="font-size:12.5px;color:var(--gray2);line-height:1.8;">We <strong style="color:var(--white);">do not begin any work without advance payment.</strong> Minimum <strong style="color:var(--gold);">50% advance</strong> required. Remaining 50% due upon delivery. No free work. No trial work.</p></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;"><div style="font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:800;color:var(--gold);margin-bottom:7px;">📅 2. Project Timeline</div><p style="font-size:12.5px;color:var(--gray2);line-height:1.8;">Timelines begin only after <strong style="color:var(--white);">advance payment is confirmed</strong> AND all required content is provided. Delays from missing client content are not our responsibility.</p></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;"><div style="font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:800;color:var(--gold);margin-bottom:7px;">🔄 3. Revisions</div><p style="font-size:12.5px;color:var(--gray2);line-height:1.8;"><strong style="color:var(--white);">Starter = 1 revision, Standard = 2 revisions, Business = 3 revisions.</strong> Additional rounds charged separately.</p></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;"><div style="font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:800;color:var(--gold);margin-bottom:7px;">🚫 4. Refund Policy</div><p style="font-size:12.5px;color:var(--gray2);line-height:1.8;">Advance payments are <strong style="color:var(--white);">non-refundable</strong> once work has begun.</p></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;"><div style="font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:800;color:var(--gold);margin-bottom:7px;">🔐 5. Ownership & IP</div><p style="font-size:12.5px;color:var(--gray2);line-height:1.8;">Full ownership transfers to client upon <strong style="color:var(--white);">final payment.</strong> RevForge retains right to showcase work unless confidentiality is requested in writing.</p></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;"><div style="font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:800;color:var(--gold);margin-bottom:7px;">📞 6. Communication</div><p style="font-size:12.5px;color:var(--gray2);line-height:1.8;">All communication via <strong style="color:var(--white);">WhatsApp or Email.</strong> Response within 12–24 hours on business days.</p></div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;"><div style="font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:800;color:var(--gold);margin-bottom:7px;">⚖️ 7. Dispute Resolution</div><p style="font-size:12.5px;color:var(--gray2);line-height:1.8;">Disputes resolved via direct communication first. Jurisdiction: <strong style="color:var(--white);">Dhaka, Bangladesh.</strong></p></div>
+        <div style="background:linear-gradient(135deg,#001300,#001e00);border:1px solid rgba(74,222,128,.18);border-radius:12px;padding:20px;"><div style="font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:800;color:#4ADE80;margin-bottom:7px;">✅ By Ordering You Agree</div><ul style="font-size:12.5px;color:var(--gray2);line-height:2.1;padding-left:18px;"><li>Advance payment required before work begins</li><li>You will provide all content on time</li><li>Revisions are limited per your tier</li><li>Advance payments are non-refundable once work starts</li><li>Final files delivered after full payment only</li></ul></div>
+        <div style="text-align:center;padding:14px;"><a href="https://wa.me/8801350058446" target="_blank" style="text-decoration:none;"><button class="m-btn-p" style="padding:12px 32px;">💬 Agree & Contact Us to Start</button></a></div>
+      </div>
+    </div>
+
+    <!-- PROPOSAL -->
+    <div class="page" id="page-proposal-page">
+      <div class="ph" style="color:var(--gold);">Request a Custom Proposal</div>
+      <p class="ps">Fill in your project details and we'll send a detailed proposal within 24 hours.</p>
+      <div style="max-width:680px;">
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(185px,1fr));gap:10px;margin-bottom:20px;" id="prop-cards"></div>
+        <div class="fw">
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:14.5px;font-weight:800;color:var(--gold);margin-bottom:15px;">Tell Us About Your Project</div>
+          <div class="form-row">
+            <div class="fg"><label class="fl">Full Name</label><input class="fi" type="text" id="prop-name" placeholder="John Smith"></div>
+            <div class="fg"><label class="fl">Company Name</label><input class="fi" type="text" id="prop-company" placeholder="Your Company Ltd"></div>
+          </div>
+          <div class="form-row">
+            <div class="fg"><label class="fl">Email</label><input class="fi" type="email" id="prop-email" placeholder="you@company.com"></div>
+            <div class="fg"><label class="fl">WhatsApp</label><input class="fi" type="text" id="prop-wa" placeholder="+1 234 567 8900"></div>
+          </div>
+          <div class="form-row">
+            <div class="fg"><label class="fl">Website Type</label>
+              <select class="fs" id="prop-type">
+                <option value="">Select type...</option>
+                <option>E-Commerce Store</option><option>SaaS Web App</option><option>Portfolio</option>
+                <option>Business / Corporate</option><option>Landing Page</option>
+                <option>Online Course Platform</option><option>AI Tool</option>
+                <option>Marketplace</option><option>Custom (describe below)</option>
+              </select>
+            </div>
+            <div class="fg"><label class="fl">Budget Range</label>
+              <select class="fs" id="prop-budget">
+                <option>$100 – $299 (Starter)</option><option>$300 – $699 (Standard)</option>
+                <option>$700 – $1,499 (Business)</option><option>$1,500 – $3,000</option><option>$3,000+ (Enterprise)</option>
+              </select>
+            </div>
+          </div>
+          <div class="fg" style="margin-bottom:12px;"><label class="fl">Deadline / Launch Date</label><input class="fi" type="text" id="prop-deadline" placeholder="e.g. Within 2 weeks, ASAP"></div>
+          <div class="fg" style="margin-bottom:12px;"><label class="fl">Project Description</label><textarea class="fi" id="prop-desc" rows="4" placeholder="Describe your project — what it does, who it's for, key features, reference websites..."></textarea></div>
+          <div class="fg" style="margin-bottom:14px;"><label class="fl">Special Requirements?</label><textarea class="fi" id="prop-special" rows="2" placeholder="e.g. Multi-language, specific payment gateway, mobile app, custom AI..."></textarea></div>
+          <div style="background:var(--gd);border:1px solid var(--border);border-radius:9px;padding:12px;margin-bottom:14px;"><p style="font-size:11.5px;color:var(--gray2);line-height:1.7;">⚠️ <strong style="color:var(--gold);">Note:</strong> RevForge Global requires <strong style="color:var(--white);">advance payment before work begins.</strong> A proposal is not a commitment — project starts after advance payment.</p></div>
+          <button class="btn-gold topbar-btn" style="width:100%;padding:13px;font-size:13.5px;font-weight:800;" onclick="submitProposal()">🚀 Submit Proposal Request</button>
+        </div>
+        <p style="font-size:11.5px;color:var(--gray);text-align:center;margin-top:12px;">Or send directly on <a href="https://wa.me/8801350058446" target="_blank" style="color:var(--wa);font-weight:700;">WhatsApp</a> for faster response.</p>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /app -->
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div><div class="m-icon" id="m-icon"></div><div class="m-title" id="m-title"></div><div class="m-sub" id="m-sub"></div></div>
+      <button class="modal-close" onclick="document.getElementById('modal').classList.remove('show')">✕</button>
+    </div>
+    <div class="modal-sec"><div class="modal-sec-t">What's Included</div><div class="feat-list" id="m-features"></div></div>
+    <div class="modal-sec"><div class="modal-sec-t">Pricing Tiers</div><div class="tiers" id="m-tiers"></div></div>
+    <div class="modal-sec"><div class="modal-sec-t">Timeline</div><div style="color:var(--gray2);font-size:12.5px;" id="m-timeline"></div></div>
+    <div class="modal-acts">
+      <button class="m-btn-p" id="m-order-btn">🚀 Order Now</button>
+      <a id="m-wa-link" href="#" target="_blank"><button class="m-btn-w">💬 WhatsApp</button></a>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const ADMIN_PIN='1234';
+let adminUnlocked=false,pendingPage=null;
+function requireAdmin(p){if(adminUnlocked){showPage(p);}else{pendingPage=p;const o=document.getElementById('pin-overlay');o.style.display='flex';setTimeout(()=>document.getElementById('pin-input').focus(),100);}}
+function checkPin(){const v=document.getElementById('pin-input').value;if(v===ADMIN_PIN){adminUnlocked=true;document.getElementById('pin-overlay').style.display='none';document.getElementById('pin-input').value='';document.getElementById('pin-error').textContent='';if(pendingPage){showPage(pendingPage);pendingPage=null;}}else{document.getElementById('pin-error').textContent='Incorrect PIN. Try again.';document.getElementById('pin-input').value='';document.getElementById('pin-input').focus();}}
+
+const websites=[
+{id:1,name:"Portfolio",icon:"🎯",cat:"business",badge:"popular",desc:"Showcase your work to clients and employers.",features:["Custom design","Projects gallery","Contact form","SEO optimized","Mobile responsive"],starter:149,standard:299,business:599,timeline:"3–5 days"},
+{id:2,name:"E-Commerce Store",icon:"🛒",cat:"business",badge:"hot",desc:"Full online store with cart, payments, and inventory management.",features:["Product catalog","Payment gateway","Order management","Admin dashboard","Inventory tracking"],starter:299,standard:699,business:1499,timeline:"7–14 days"},
+{id:3,name:"Business / Corporate",icon:"🏢",cat:"business",badge:"popular",desc:"Professional company website to establish credibility and attract clients.",features:["About & Team page","Services section","Testimonials","Contact & Map","Blog ready"],starter:199,standard:399,business:799,timeline:"5–7 days"},
+{id:4,name:"Landing Page",icon:"📝",cat:"business",badge:"popular",desc:"Single high-converting page to capture leads or sell one product.",features:["Conversion-focused design","A/B test ready","Lead capture form","Analytics integration","Fast loading"],starter:99,standard:199,business:399,timeline:"2–3 days"},
+{id:5,name:"Marketplace",icon:"🏪",cat:"business",badge:"new",desc:"Multi-vendor platform where buyers and sellers connect.",features:["Vendor registration","Product listings","Escrow payments","Review system","Admin panel"],starter:599,standard:1199,business:2499,timeline:"14–21 days"},
+{id:6,name:"Subscription Box",icon:"📦",cat:"business",desc:"Recurring revenue store for box subscription businesses.",features:["Recurring billing","Subscriber portal","Box customization","Shipping integration","Analytics"],starter:299,standard:599,business:1199,timeline:"7–10 days"},
+{id:7,name:"Dropshipping Store",icon:"🚚",cat:"business",desc:"AliExpress-integrated store with automated order fulfillment.",features:["Supplier integration","Auto order processing","Price automation","Product import","Multi-currency"],starter:249,standard:499,business:999,timeline:"5–8 days"},
+{id:8,name:"Auction Site",icon:"🔨",cat:"business",desc:"Real-time bidding platform for products or services.",features:["Live bid engine","Timer system","Escrow","Seller verification","Bid history"],starter:499,standard:999,business:1999,timeline:"14–20 days"},
+{id:9,name:"Booking / Reservation",icon:"📅",cat:"business",badge:"popular",desc:"Online appointment and booking system for any service business.",features:["Calendar integration","Payment at booking","Reminders","Staff management","Mobile app"],starter:249,standard:499,business:999,timeline:"5–8 days"},
+{id:10,name:"Real Estate",icon:"🏡",cat:"business",desc:"Property listing and search platform for agents and agencies.",features:["Property listings","Map search","Virtual tour","Lead capture","CRM integration"],starter:349,standard:699,business:1399,timeline:"7–12 days"},
+{id:11,name:"Job Board",icon:"💼",cat:"business",desc:"Post and search jobs — niche or general employment platform.",features:["Job listings","Resume upload","Employer dashboard","Email alerts","Featured jobs"],starter:299,standard:599,business:1199,timeline:"7–10 days"},
+{id:12,name:"Classified Ads",icon:"📌",cat:"business",desc:"Local buy/sell platform like Bikroy or Craigslist.",features:["Category structure","Image upload","Location filter","Premium listings","User accounts"],starter:299,standard:599,business:1199,timeline:"7–12 days"},
+{id:13,name:"Price Comparison",icon:"⚖️",cat:"business",desc:"Compare products and prices across multiple stores.",features:["Product scraping","Price history","Affiliate links","Alerts","SEO optimized"],starter:399,standard:799,business:1499,timeline:"10–14 days"},
+{id:14,name:"Affiliate Site",icon:"🔗",cat:"business",desc:"Niche review site monetized with affiliate links.",features:["Review templates","Comparison tables","Affiliate tracking","SEO structure","Email capture"],starter:199,standard:399,business:799,timeline:"5–8 days"},
+{id:15,name:"Online Course Platform",icon:"🎓",cat:"education",badge:"hot",desc:"Full LMS — sell and deliver video courses online.",features:["Video lessons","Quizzes","Certificates","Student dashboard","Payment integration"],starter:399,standard:799,business:1599,timeline:"10–14 days"},
+{id:16,name:"Quiz / Test Site",icon:"📝",cat:"education",desc:"Interactive quiz platform for education or lead gen.",features:["Question builder","Timer","Scoreboard","Lead capture","Analytics"],starter:199,standard:399,business:799,timeline:"5–7 days"},
+{id:17,name:"Wiki / Knowledge Base",icon:"📚",cat:"education",desc:"Internal or public knowledge base for documentation.",features:["Search","Version control","Category tree","Contributors","Export PDF"],starter:199,standard:399,business:799,timeline:"5–7 days"},
+{id:18,name:"Research / Academic",icon:"🔬",cat:"education",desc:"Academic publishing and research paper platform.",features:["Paper upload","Citation tools","Peer review","Author profiles","DOI integration"],starter:299,standard:599,business:1199,timeline:"7–10 days"},
+{id:19,name:"Tutoring Platform",icon:"👩‍🏫",cat:"education",desc:"Connect students with tutors for live or recorded sessions.",features:["Tutor profiles","Scheduling","Video sessions","Payment","Reviews"],starter:349,standard:699,business:1399,timeline:"8–12 days"},
+{id:20,name:"Kids Learning",icon:"🧒",cat:"education",desc:"Gamified learning platform for children.",features:["Age-appropriate UI","Games","Progress tracking","Parent dashboard","Audio/video"],starter:299,standard:599,business:1199,timeline:"7–12 days"},
+{id:21,name:"Blog / News Site",icon:"📰",cat:"media",badge:"popular",desc:"Content publishing platform with SEO and monetization built in.",features:["Rich text editor","Categories & tags","Newsletter","Ad slots","Analytics"],starter:149,standard:299,business:599,timeline:"3–5 days"},
+{id:22,name:"Video Streaming",icon:"🎬",cat:"media",badge:"new",desc:"YouTube-style video platform with upload and monetization.",features:["Video upload","Adaptive streaming","Subscriptions","Ad revenue","Live stream"],starter:599,standard:1199,business:2499,timeline:"14–21 days"},
+{id:23,name:"Music Streaming",icon:"🎵",cat:"media",desc:"Music platform for artists to distribute and monetize.",features:["Audio player","Playlists","Artist pages","Revenue sharing","Offline mode"],starter:499,standard:999,business:1999,timeline:"12–18 days"},
+{id:24,name:"Podcast Platform",icon:"🎙️",cat:"media",desc:"Host, distribute, and monetize podcasts.",features:["RSS feed","Episode player","Transcript","Sponsors","Analytics"],starter:199,standard:399,business:799,timeline:"5–7 days"},
+{id:25,name:"Webcomic / Manga",icon:"🎨",cat:"media",desc:"Webtoon-style comic publishing platform.",features:["Chapter uploads","Reader mode","Comments","Subscriptions","Mobile app"],starter:299,standard:599,business:1199,timeline:"7–10 days"},
+{id:26,name:"Meme / Humor Site",icon:"😂",cat:"media",desc:"Community-driven meme and humor content platform.",features:["Image upload","Upvote system","Categories","Share tools","Trending feed"],starter:199,standard:399,business:799,timeline:"5–7 days"},
+{id:27,name:"Live Streaming",icon:"📡",cat:"media",badge:"hot",desc:"Twitch-style platform for live creators and events.",features:["Low-latency stream","Chat","Donations","VOD archive","Multi-stream"],starter:599,standard:1199,business:2499,timeline:"14–21 days"},
+{id:28,name:"Photo Gallery",icon:"🖼️",cat:"media",desc:"Professional photo showcase and stock platform.",features:["High-res upload","Albums","Download tiers","Watermark","SEO"],starter:199,standard:399,business:799,timeline:"4–6 days"},
+{id:29,name:"Stock Media",icon:"📷",cat:"media",desc:"Sell photos, videos, and audio as stock assets.",features:["Asset upload","License management","Search","Contributor payouts","Collections"],starter:399,standard:799,business:1599,timeline:"10–14 days"},
+{id:30,name:"Social Network",icon:"👥",cat:"social",badge:"new",desc:"Full social platform with profiles, feed, and messaging.",features:["User profiles","News feed","Messaging","Groups","Notifications"],starter:699,standard:1399,business:2999,timeline:"21–30 days"},
+{id:31,name:"Dating Site",icon:"💘",cat:"social",desc:"Matchmaking and dating platform with swipe or search.",features:["Match algorithm","Swipe UI","Chat","Premium filters","Safety tools"],starter:499,standard:999,business:1999,timeline:"14–20 days"},
+{id:32,name:"Q&A Platform",icon:"❓",cat:"social",desc:"Stack Overflow or Quora-style community Q&A.",features:["Ask questions","Vote system","Tags","Expert badges","Search"],starter:299,standard:599,business:1199,timeline:"7–10 days"},
+{id:33,name:"Review Site",icon:"⭐",cat:"social",badge:"popular",desc:"TripAdvisor-style platform for business or product reviews.",features:["Star ratings","Written reviews","Photos","Business claims","Verified badges"],starter:299,standard:599,business:1199,timeline:"7–10 days"},
+{id:34,name:"Fan Site / Fandom Wiki",icon:"🏆",cat:"social",desc:"Dedicated community site for fans of a brand or show.",features:["Wiki pages","Forums","Fan art","Events","Polls"],starter:199,standard:399,business:799,timeline:"5–7 days"},
+{id:35,name:"Niche Community",icon:"🌐",cat:"social",desc:"Focused community platform for a specific industry or interest.",features:["Posts & comments","DMs","Events","Membership tiers","Analytics"],starter:299,standard:599,business:1199,timeline:"7–12 days"},
+{id:36,name:"SaaS Web App",icon:"⚙️",cat:"tools",badge:"hot",desc:"Full software-as-a-service product with auth, billing, and dashboard.",features:["Auth system","Subscription billing","User dashboard","API","Admin panel"],starter:699,standard:1399,business:2999,timeline:"21–30 days"},
+{id:37,name:"Productivity App",icon:"✅",cat:"tools",desc:"Task, project, or note management web application.",features:["Task management","Collaboration","Notifications","Mobile responsive","Integrations"],starter:399,standard:799,business:1599,timeline:"10–14 days"},
+{id:38,name:"Design Tool",icon:"🎨",cat:"tools",desc:"Web-based design or visual creation tool.",features:["Canvas editor","Templates","Export","Asset library","Team sharing"],starter:599,standard:1199,business:2499,timeline:"14–21 days"},
+{id:39,name:"Code / Dev Tool",icon:"💻",cat:"tools",desc:"Developer-focused tool like a code sandbox or API tester.",features:["Code editor","Syntax highlight","Run code","Share snippets","API docs"],starter:399,standard:799,business:1599,timeline:"10–14 days"},
+{id:40,name:"AI Tool",icon:"🤖",cat:"tools",badge:"new",desc:"AI-powered web app using GPT or custom models.",features:["AI integration","Prompt builder","History","Usage limits","API key management"],starter:499,standard:999,business:1999,timeline:"10–16 days"},
+{id:41,name:"Analytics Dashboard",icon:"📊",cat:"tools",desc:"Data visualization and business intelligence platform.",features:["Chart builder","Data connectors","Real-time updates","Export","Custom reports"],starter:399,standard:799,business:1599,timeline:"10–14 days"},
+{id:42,name:"CRM Platform",icon:"🤝",cat:"tools",desc:"Customer relationship management system.",features:["Contact management","Pipeline","Email integration","Tasks","Reports"],starter:499,standard:999,business:1999,timeline:"12–18 days"},
+{id:43,name:"Email Marketing",icon:"📧",cat:"tools",desc:"Newsletter and email campaign management platform.",features:["Drag & drop editor","Automation","Segmentation","Analytics","Templates"],starter:299,standard:599,business:1199,timeline:"7–10 days"},
+{id:44,name:"Invoicing / Finance",icon:"🧾",cat:"tools",desc:"Invoice generation and financial tracking for businesses.",features:["Invoice builder","Client portal","Tax calc","Expense tracking","Reports"],starter:249,standard:499,business:999,timeline:"5–8 days"},
+{id:45,name:"Password Manager",icon:"🔐",cat:"tools",desc:"Secure credential storage and management app.",features:["Vault storage","Browser extension","2FA","Share secrets","Audit log"],starter:399,standard:799,business:1599,timeline:"10–14 days"},
+{id:46,name:"Banking / Fintech",icon:"🏦",cat:"finance",desc:"Digital banking or fintech service platform.",features:["Account management","Transfers","Transaction history","KYC flow","Security"],starter:799,standard:1599,business:3499,timeline:"21–35 days"},
+{id:47,name:"Crypto Exchange",icon:"₿",cat:"finance",badge:"new",desc:"Buy, sell, and trade cryptocurrency platform.",features:["Wallet integration","Order book","Trading charts","KYC","API"],starter:999,standard:1999,business:4999,timeline:"30–45 days"},
+{id:48,name:"Stock Market Platform",icon:"📈",cat:"finance",desc:"Stock tracking, screener, and portfolio management.",features:["Live prices","Portfolio tracker","Screener","Alerts","News feed"],starter:499,standard:999,business:1999,timeline:"14–20 days"},
+{id:49,name:"Insurance",icon:"🛡️",cat:"finance",desc:"Insurance product comparison and purchase platform.",features:["Quote calculator","Policy management","Claims","Agent portal","Payments"],starter:599,standard:1199,business:2499,timeline:"14–21 days"},
+{id:50,name:"Legal Services",icon:"⚖️",cat:"finance",desc:"Online legal services and document preparation.",features:["Document templates","Lawyer matching","E-signatures","Consultations","Secure vault"],starter:399,standard:799,business:1599,timeline:"10–14 days"},
+{id:51,name:"Tax Filing",icon:"🧮",cat:"finance",desc:"Guided tax return preparation and filing platform.",features:["Step-by-step wizard","Import W2/P60","Calculations","E-file","History"],starter:399,standard:799,business:1599,timeline:"10–14 days"},
+{id:52,name:"Telemedicine",icon:"🏥",cat:"health",badge:"popular",desc:"Online doctor consultation and health services.",features:["Video consult","Prescription","Medical records","Insurance","Appointments"],starter:599,standard:1199,business:2499,timeline:"14–21 days"},
+{id:53,name:"Mental Health",icon:"🧠",cat:"health",desc:"Therapy matching and mental wellness platform.",features:["Therapist profiles","Booking","Video sessions","Journal","Resources"],starter:399,standard:799,business:1599,timeline:"10–14 days"},
+{id:54,name:"Fitness / Workout",icon:"💪",cat:"health",desc:"Workout tracking and fitness coaching platform.",features:["Workout builder","Progress tracking","Nutrition log","Wearable sync","Community"],starter:299,standard:599,business:1199,timeline:"7–10 days"},
+{id:55,name:"Recipe / Food",icon:"🍳",cat:"health",desc:"Recipe discovery, sharing, and meal planning platform.",features:["Recipe database","Meal planner","Shopping list","Video support","Nutrition info"],starter:199,standard:399,business:799,timeline:"5–8 days"},
+{id:56,name:"Diet / Nutrition",icon:"🥗",cat:"health",desc:"Personalized nutrition planning and tracking.",features:["Calorie tracker","Macro goals","Food database","Progress charts","Coach connect"],starter:249,standard:499,business:999,timeline:"6–9 days"},
+{id:57,name:"Hospital / Clinic",icon:"🩺",cat:"health",desc:"Professional healthcare provider website with booking.",features:["Doctor profiles","Appointment booking","Services","Patient portal","Blog"],starter:249,standard:499,business:999,timeline:"5–8 days"},
+{id:58,name:"Browser Games",icon:"🕹️",cat:"gaming",desc:"Play-in-browser HTML5 game portal.",features:["Game embed","Leaderboard","Achievements","Accounts","Ad slots"],starter:299,standard:599,business:1199,timeline:"7–12 days"},
+{id:59,name:"Game Download",icon:"🎮",cat:"gaming",desc:"Steam-style game distribution and community platform.",features:["Game library","Reviews","Community forums","Updates","DLC"],starter:599,standard:1199,business:2499,timeline:"14–21 days"},
+{id:60,name:"Esports",icon:"🏅",cat:"gaming",badge:"new",desc:"Tournament management and esports community platform.",features:["Tournament bracket","Team profiles","Match results","Prize pool","Live scores"],starter:399,standard:799,business:1599,timeline:"10–14 days"},
+{id:61,name:"Game Wiki / Guide",icon:"📖",cat:"gaming",desc:"Game walkthrough, wiki, and strategy guide site.",features:["Wiki editor","Search","Character database","Video embeds","Community"],starter:199,standard:399,business:799,timeline:"5–7 days"},
+{id:62,name:"Event / Ticketing",icon:"🎟️",cat:"misc",badge:"popular",desc:"Event listing and online ticket sales platform.",features:["Event creation","Ticket types","QR code tickets","Seating map","Reporting"],starter:299,standard:599,business:1199,timeline:"7–10 days"},
+{id:63,name:"Wedding Site",icon:"💍",cat:"misc",desc:"Beautiful wedding planning and RSVP website.",features:["Our story page","RSVP form","Photo gallery","Registry link","Countdown"],starter:149,standard:299,business:499,timeline:"3–5 days"},
+{id:64,name:"Charity / Donation",icon:"❤️",cat:"misc",desc:"Fundraising and donation collection platform.",features:["Campaign pages","Progress bar","Donor wall","Payment","Tax receipts"],starter:199,standard:399,business:799,timeline:"5–7 days"},
+{id:65,name:"Petition",icon:"✍️",cat:"misc",desc:"Online petition and signature collection platform.",features:["Petition builder","Signature counter","Social share","Email updates","Goal tracker"],starter:149,standard:299,business:599,timeline:"3–5 days"},
+{id:66,name:"Religion / Mosque",icon:"🕌",cat:"misc",desc:"Religious organization website with prayer times and events.",features:["Prayer times","Events","Donations","Quran/Bible","Newsletter"],starter:149,standard:299,business:599,timeline:"3–5 days"},
+{id:67,name:"Travel Blog / Guide",icon:"✈️",cat:"misc",badge:"popular",desc:"Travel content and destination guide platform.",features:["Destination pages","Itineraries","Photo galleries","Affiliate links","Newsletter"],starter:199,standard:399,business:799,timeline:"5–7 days"},
+{id:68,name:"Weather App",icon:"🌤️",cat:"misc",desc:"Location-based weather forecasting web app.",features:["7-day forecast","Hourly data","Maps","Alerts","Widget embed"],starter:199,standard:399,business:799,timeline:"5–7 days"},
+{id:69,name:"Translation Tool",icon:"🌐",cat:"misc",desc:"Language translation and localization platform.",features:["Multi-language","API access","Document upload","Glossary","Human review"],starter:299,standard:599,business:1199,timeline:"7–10 days"},
+{id:70,name:"URL Shortener",icon:"🔗",cat:"misc",desc:"Branded link shortening and analytics platform.",features:["Custom domain","Click analytics","QR codes","Link expiry","API"],starter:149,standard:299,business:599,timeline:"3–5 days"},
+{id:71,name:"Coming Soon / Waitlist",icon:"🚀",cat:"misc",desc:"Pre-launch page to capture early interest.",features:["Countdown timer","Email capture","Social share","Admin dashboard","Auto email"],starter:99,standard:149,business:299,timeline:"1–2 days"},
+{id:72,name:"Personal Diary / Journal",icon:"📓",cat:"misc",desc:"Private or public digital journal platform.",features:["Rich text editor","Private/public posts","Mood tracking","Calendar view","Export"],starter:149,standard:299,business:599,timeline:"3–5 days"},
+{id:73,name:"NFT Marketplace",icon:"💎",cat:"misc",badge:"new",desc:"Buy, sell, and mint NFTs on a branded platform.",features:["Wallet connect","Mint UI","Auction","Royalties","Gas optimization"],starter:799,standard:1599,business:3499,timeline:"21–30 days"},
+{id:74,name:"Obituary / Memorial",icon:"🕯️",cat:"misc",desc:"Online memorial and tribute pages for loved ones.",features:["Memorial pages","Photo gallery","Guestbook","Candle lighting","Share"],starter:149,standard:299,business:499,timeline:"3–5 days"},
+{id:75,name:"Astrology / Tarot",icon:"🔮",cat:"misc",desc:"Horoscope, birth chart, and tarot reading platform.",features:["Birth chart calc","Daily horoscope","Tarot readings","Live chat","Subscriptions"],starter:199,standard:399,business:799,timeline:"5–8 days"},
+{id:76,name:"Affiliate Network",icon:"🏦",cat:"misc",desc:"Full affiliate marketing management platform.",features:["Affiliate signup","Link tracking","Commission calc","Payouts","Reporting"],starter:499,standard:999,business:1999,timeline:"12–18 days"},
+{id:77,name:"Podcast Directory",icon:"🎧",cat:"misc",desc:"Podcast discovery and aggregator platform.",features:["RSS import","Search & filter","Playlists","Reviews","Charts"],starter:249,standard:499,business:999,timeline:"6–9 days"},
+{id:78,name:"Government / NGO",icon:"🏛️",cat:"misc",desc:"Official government department or NGO website.",features:["Services portal","Document download","News","Contact directory","Accessibility"],starter:299,standard:599,business:1199,timeline:"7–10 days"},
+{id:79,name:"Forum / Discussion",icon:"💬",cat:"social",desc:"Reddit-style threaded discussion community.",features:["Subreddits/boards","Upvote system","Thread nesting","Moderation","Search"],starter:299,standard:599,business:1199,timeline:"7–10 days"},
+{id:80,name:"Directory / Listing",icon:"📋",cat:"business",desc:"Yellow Pages-style business or resource directory.",features:["Business profiles","Search & filter","Reviews","Map integration","Premium listings"],starter:299,standard:599,business:1199,timeline:"7–10 days"},
+];
+
+const mockSubs=[
+{name:"Rina Akhter",email:"rina@gmail.com",type:"E-Commerce Store"},
+{name:"James Obi",email:"james@startup.io",type:"SaaS Web App"},
+{name:"Sarah K.",email:"sarahk@fashion.bd",type:"Portfolio"},
+{name:"Arif Hossain",email:"arif@biz.com",type:"Job Board"},
+{name:"Priya S.",email:"priya@edu.in",type:"Online Course Platform"},
+{name:"Tom Nguyen",email:"tom@agency.co",type:"Landing Page"},
+{name:"Nadia Islam",email:"nadia@blog.com",type:"Blog / News Site"},
+{name:"Alex T.",email:"alex@techmart.io",type:"AI Tool"},
+];
+
+const imgs={1:'https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?w=600&q=80',2:'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=600&q=80',3:'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&q=80',4:'https://images.unsplash.com/photo-1559526324-593bc073d938?w=600&q=80',5:'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=600&q=80',6:'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=600&q=80',7:'https://images.unsplash.com/photo-1601598851547-4302969d0614?w=600&q=80',8:'https://images.unsplash.com/photo-1529612700005-e35377bf1415?w=600&q=80',9:'https://images.unsplash.com/photo-1506784365847-bbad939e9335?w=600&q=80',10:'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=600&q=80',11:'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=600&q=80',12:'https://images.unsplash.com/photo-1580828343064-fde4fc206bc6?w=600&q=80',13:'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80',14:'https://images.unsplash.com/photo-1432888498266-38ffec3eaf0a?w=600&q=80',15:'https://images.unsplash.com/photo-1501504905252-473c47e087f8?w=600&q=80',16:'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=600&q=80',17:'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=600&q=80',18:'https://images.unsplash.com/photo-1532619675605-1ede6c2ed2b0?w=600&q=80',19:'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=600&q=80',20:'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=600&q=80',21:'https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=600&q=80',22:'https://images.unsplash.com/photo-1536240478700-b869ad10f895?w=600&q=80',23:'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600&q=80',24:'https://images.unsplash.com/photo-1478737270197-2df0e2debb14?w=600&q=80',25:'https://images.unsplash.com/photo-1578926375605-eaf7559b1458?w=600&q=80',26:'https://images.unsplash.com/photo-1527529482837-4698179dc6ce?w=600&q=80',27:'https://images.unsplash.com/photo-1560169897-fc0cdbdfa4d5?w=600&q=80',28:'https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=600&q=80',29:'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=600&q=80',30:'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=600&q=80',31:'https://images.unsplash.com/photo-1474552226712-ac0f0961a954?w=600&q=80',32:'https://images.unsplash.com/photo-1551836022-deb4988cc6c0?w=600&q=80',33:'https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=600&q=80',34:'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&q=80',35:'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&q=80',36:'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&q=80',37:'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?w=600&q=80',38:'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=600&q=80',39:'https://images.unsplash.com/photo-1516259762381-22954d7d3ad2?w=600&q=80',40:'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=600&q=80',41:'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&q=80',42:'https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&q=80',43:'https://images.unsplash.com/photo-1596526131083-e8c633c948d2?w=600&q=80',44:'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=600&q=80',45:'https://images.unsplash.com/photo-1614064641938-3bbee52942c7?w=600&q=80',46:'https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=600&q=80',47:'https://images.unsplash.com/photo-1622630998477-20aa696ecb05?w=600&q=80',48:'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=600&q=80',49:'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=600&q=80',50:'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=600&q=80',51:'https://images.unsplash.com/photo-1498049794561-7780e7231661?w=600&q=80',52:'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&q=80',53:'https://images.unsplash.com/photo-1544027993-37dbfe43562a?w=600&q=80',54:'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=600&q=80',55:'https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=600&q=80',56:'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=600&q=80',57:'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=600&q=80',58:'https://images.unsplash.com/photo-1556438064-2d7646166914?w=600&q=80',59:'https://images.unsplash.com/photo-1593305841991-05c297ba4575?w=600&q=80',60:'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&q=80',61:'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=600&q=80',62:'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=600&q=80',63:'https://images.unsplash.com/photo-1519225421980-715cb0215aed?w=600&q=80',64:'https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?w=600&q=80',65:'https://images.unsplash.com/photo-1540910419892-4a36d2c3266c?w=600&q=80',66:'https://images.unsplash.com/photo-1584551246679-0daf3d275d0f?w=600&q=80',67:'https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=600&q=80',68:'https://images.unsplash.com/photo-1504608524841-42584120d693?w=600&q=80',69:'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=600&q=80',70:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',71:'https://images.unsplash.com/photo-1516321497487-e288fb19713f?w=600&q=80',72:'https://images.unsplash.com/photo-1455390582262-044cdead277a?w=600&q=80',73:'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=600&q=80',74:'https://images.unsplash.com/photo-1490578474895-699cd4e2cf59?w=600&q=80',75:'https://images.unsplash.com/photo-1518152006812-edab29b069ac?w=600&q=80',76:'https://images.unsplash.com/photo-1562577309-4932fdd64cd1?w=600&q=80',77:'https://images.unsplash.com/photo-1590602847861-f357a9332bbc?w=600&q=80',78:'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?w=600&q=80',79:'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=600&q=80',80:'https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&q=80'};
+const bgC={business:'linear-gradient(135deg,#0D0A00,#1A1200)',education:'linear-gradient(135deg,#060D00,#101A00)',media:'linear-gradient(135deg,#0D0008,#180010)',social:'linear-gradient(135deg,#0D0800,#1A1000)',tools:'linear-gradient(135deg,#00080D,#001018)',finance:'linear-gradient(135deg,#0D0A00,#181200)',health:'linear-gradient(135deg,#0D0000,#180000)',gaming:'linear-gradient(135deg,#06000D,#0E0018)',misc:'linear-gradient(135deg,#00080D,#001414)'};
+let curView='grid',curFilter='all',curSearch='';
+
+function renderCatalog(){
+  const c=document.getElementById('catalog-container');
+  const f=websites.filter(w=>(curFilter==='all'||w.cat===curFilter)&&(w.name.toLowerCase().includes(curSearch.toLowerCase())||w.desc.toLowerCase().includes(curSearch.toLowerCase())));
+  if(curView==='grid'){
+    c.className='catalog-grid';
+    c.innerHTML=f.map(w=>`<div class="cat-card" onclick="openModal(${w.id})"><div class="cat-card-top" style="background:${bgC[w.cat]||bgC.misc};">${imgs[w.id]?`<img src="${imgs[w.id]}" alt="${w.name}" onerror="this.style.display='none'">`:''}
+    <div class="cat-top-inner">${w.badge?`<span class="cat-badge ${w.badge==='popular'?'bp':w.badge==='hot'?'bh':'bn'}">${w.badge.toUpperCase()}</span>`:''}<span style="font-size:32px;filter:drop-shadow(0 2px 10px rgba(0,0,0,.8));">${w.icon}</span></div></div>
+    <div class="cat-body"><div class="cat-num">Type #${String(w.id).padStart(2,'0')}</div><div class="cat-name">${w.name}</div><div class="cat-desc">${w.desc}</div>
+    <div class="cat-footer"><div><span class="price-from">From</span><span class="price-val">$${w.starter}</span></div>
+    <div class="cat-actions"><button class="btn-ord" onclick="event.stopPropagation();orderNow('${w.name}')">Order</button><button class="btn-wai" onclick="event.stopPropagation();waContact('${w.name}')">💬</button></div></div></div></div>`).join('');
+  }else{
+    c.className='catalog-list';
+    c.innerHTML=f.map(w=>`<div class="list-item" onclick="openModal(${w.id})"><div class="list-icon">${w.icon}</div><div class="list-info"><div class="list-name">${w.name}</div><div class="list-desc">${w.desc}</div></div><div class="list-price">From $${w.starter}</div><div class="list-acts"><button class="btn-ord" onclick="event.stopPropagation();orderNow('${w.name}')">Order</button><button class="btn-wai" onclick="event.stopPropagation();waContact('${w.name}')">💬</button></div></div>`).join('');
+  }
+}
+
+function openModal(id){
+  const w=websites.find(x=>x.id===id);if(!w)return;
+  document.getElementById('m-icon').textContent=w.icon;
+  document.getElementById('m-title').textContent=w.name;
+  document.getElementById('m-sub').textContent=w.desc;
+  document.getElementById('m-features').innerHTML=w.features.map(f=>`<div class="feat-item">${f}</div>`).join('');
+  document.getElementById('m-tiers').innerHTML=`<div class="tier"><div class="tier-n">Starter</div><div class="tier-p">$${w.starter}</div><div class="tier-t">Basic features</div></div><div class="tier rec"><div class="tier-rec-l">POPULAR</div><div class="tier-n">Standard</div><div class="tier-p">$${w.standard}</div><div class="tier-t">Full features</div></div><div class="tier"><div class="tier-n">Business</div><div class="tier-p">$${w.business}</div><div class="tier-t">Premium + support</div></div>`;
+  document.getElementById('m-timeline').textContent='⏱ Delivery: '+w.timeline;
+  document.getElementById('m-order-btn').onclick=()=>orderNow(w.name);
+  document.getElementById('m-wa-link').href=`https://wa.me/8801350058446?text=Hi%20RevForge%2C%20I%20want%20a%20${encodeURIComponent(w.name)}%20website`;
+  document.getElementById('modal').classList.add('show');
+}
+function closeModal(e){if(e.target.id==='modal')document.getElementById('modal').classList.remove('show');}
+function orderNow(name){document.getElementById('modal').classList.remove('show');showPage('subscribe');setTimeout(()=>{const s=document.getElementById('sub-type-select');for(let o of s.options){if(o.value===name){s.value=name;break;}}},100);showToast('🚀 Select your details below!');}
+function waContact(name){window.open(`https://wa.me/8801350058446?text=Hi%20RevForge%2C%20I%20want%20a%20${encodeURIComponent(name)}%20website`,'_blank');}
+function filterCat(cat,btn){curFilter=cat;document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderCatalog();}
+function searchCat(v){curSearch=v;renderCatalog();}
+function setView(v){curView=v;document.getElementById('vt-grid').classList.toggle('active',v==='grid');document.getElementById('vt-list').classList.toggle('active',v==='list');renderCatalog();}
+
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const pg=document.getElementById('page-'+id);if(pg)pg.classList.add('active');
+  const titles={catalog:'All Website Types',subscribe:'Order / Contact',dashboard:'Dashboard','pricing-pub':'Pricing',orders:'Orders',subscribers:'Subscribers','manage-pricing':'Manage Pricing','tech-stack':'Technology Stack','youtube-page':'YouTube & Demos','terms-page':'Terms & Conditions','proposal-page':'Get a Proposal'};
+  document.getElementById('page-title').textContent=titles[id]||id;
+  document.getElementById('sidebar').classList.remove('open');
+}
+
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+
+function submitSubscribe(){
+  const n=document.getElementById('sub-name').value,e=document.getElementById('sub-email').value;
+  if(!n||!e){showToast('⚠️ Please fill name & email');return;}
+  showToast('✅ '+n+', we\'ll contact you soon!');
+  document.getElementById('sub-name').value='';document.getElementById('sub-email').value='';document.getElementById('sub-phone').value='';
+}
+
+function submitProposal(){
+  const n=document.getElementById('prop-name').value,e=document.getElementById('prop-email').value;
+  if(!n||!e){showToast('⚠️ Please fill name & email');return;}
+  const co=document.getElementById('prop-company').value,wa=document.getElementById('prop-wa').value,
+  ty=document.getElementById('prop-type').value,bu=document.getElementById('prop-budget').value,
+  dl=document.getElementById('prop-deadline').value,de=document.getElementById('prop-desc').value;
+  const msg=`Hi RevForge Global 👋\n\nProposal Request:\n👤 Name: ${n}\n🏢 Company: ${co}\n✉️ Email: ${e}\n📱 WhatsApp: ${wa}\n🌐 Type: ${ty}\n💰 Budget: ${bu}\n📅 Deadline: ${dl}\n\n📋 Description:\n${de}`;
+  window.open(`https://wa.me/8801350058446?text=${encodeURIComponent(msg)}`,'_blank');
+  showToast('✅ Opening WhatsApp with your proposal!');
+}
+
+function populateSubSelect(){
+  const s=document.getElementById('sub-type-select');
+  websites.forEach(w=>{const o=document.createElement('option');o.value=w.name;o.textContent=w.icon+' '+w.name;s.appendChild(o);});
+}
+
+function renderSubs(){
+  document.getElementById('sub-grid').innerHTML=mockSubs.map(s=>`<div class="sub-card"><div class="sub-av">${s.name.split(' ').map(x=>x[0]).join('')}</div><div style="flex:1;min-width:0;"><div class="sub-nm">${s.name}</div><div class="sub-em">${s.email}</div><div class="sub-tp">${s.type}</div></div><div style="display:flex;gap:4px;margin-left:auto;"><button class="ic-btn" onclick="waContact('${s.type}')">💬</button><button class="ic-btn">✉️</button></div></div>`).join('');
+}
+
+function renderPricingPub(){
+  document.getElementById('pricing-pub-container').innerHTML=websites.slice(0,20).map(w=>`<div class="pc"><div style="font-size:20px;margin-bottom:6px;">${w.icon}</div><div class="pc-nm">${w.name}</div><div class="tr-row"><span class="tr-nm">Starter</span><span class="tr-pr">$${w.starter}</span></div><div class="tr-row"><span class="tr-nm">Standard</span><span class="tr-pr">$${w.standard}</span></div><div class="tr-row"><span class="tr-nm">Business</span><span class="tr-pr">$${w.business}</span></div><button class="ep-btn" onclick="openModal(${w.id})">View Details →</button></div>`).join('');
+}
+
+function renderManagePricing(){
+  document.getElementById('manage-pricing-container').innerHTML=websites.map(w=>`<div class="pc"><div style="display:flex;align-items:center;gap:7px;margin-bottom:10px;"><span style="font-size:16px;">${w.icon}</span><div class="pc-nm" style="margin-bottom:0;font-size:11.5px;">${w.name}</div></div><div style="display:flex;flex-direction:column;gap:4px;"><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:9.5px;color:var(--gray);width:54px;">Starter</span><input type="number" value="${w.starter}" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--gold);font-size:11.5px;font-weight:700;outline:none;"></div><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:9.5px;color:var(--gray);width:54px;">Standard</span><input type="number" value="${w.standard}" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--gold);font-size:11.5px;font-weight:700;outline:none;"></div><div style="display:flex;align-items:center;gap:6px;"><span style="font-size:9.5px;color:var(--gray);width:54px;">Business</span><input type="number" value="${w.business}" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:4px 8px;color:var(--gold);font-size:11.5px;font-weight:700;outline:none;"></div></div></div>`).join('');
+}
+
+function renderTechStack(){
+  const d={fe:['HTML5','CSS3','JavaScript (ES6+)','TypeScript','React.js','Next.js','Vue.js','Nuxt.js','Tailwind CSS','Bootstrap 5','GSAP Animations','Framer Motion'],be:['Python','FastAPI','Django','Flask','Node.js','Express.js','PHP','Laravel','REST APIs','GraphQL','WebSockets','Microservices'],db:['MySQL','PostgreSQL','MongoDB','Firebase','SQLite','Redis','Supabase','PlanetScale','Cloudinary','AWS S3','Google Cloud Storage','Airtable'],ai:['OpenAI GPT-4','Claude AI','Gemini API','LangChain','Hugging Face','Python NLP','Selenium','Playwright','BeautifulSoup','Scrapy','n8n Automation','Zapier'],pay:['Stripe','PayPal','Gumroad','bKash','Nagad','SSL Commerz','Paddle','LemonSqueezy','Crypto Payments','Wise','Payoneer','Bank Transfer'],host:['Netlify','Vercel','AWS','Google Cloud','DigitalOcean','GitHub Pages','cPanel Hosting','VPS Linux','Docker','CI/CD Pipelines','Cloudflare','Nginx'],cms:['WordPress','Shopify','WooCommerce','Webflow','Ghost CMS','Strapi','Sanity.io','Contentful','OpenCart','Magento','Custom CMS','Headless CMS'],dev:['VS Code','Git & GitHub','Figma','Adobe XD','Postman','Swagger','Jira','Notion','Slack API','Google Analytics','Meta Pixel','Hotjar']};
+  Object.keys(d).forEach(k=>{const el=document.getElementById(k+'-grid');if(el)el.innerHTML=d[k].map(t=>`<div class="tt"><span>▸</span>${t}</div>`).join('');});
+}
+
+function renderYT(){
+  const cards=[{icon:'🤖',title:'AI Tool Demos',desc:'Live demos of RevForge AI-powered tools in action'},{icon:'🐍',title:'Python Dev Videos',desc:'How we build custom Python software and automation'},{icon:'🌐',title:'Website Builds',desc:'Real client website builds from start to finish'},{icon:'💰',title:'Revenue Systems',desc:'B2B lead gen, cold outreach, and appointment setting demos'},{icon:'📊',title:'Company Insights',desc:'Team updates, launches, and behind-the-scenes'},{icon:'🎓',title:'Free Tutorials',desc:'Tech tutorials for developers and entrepreneurs'}];
+  document.getElementById('yt-cards').innerHTML=cards.map(c=>`<div style="background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:16px;"><div style="font-size:26px;margin-bottom:7px;">${c.icon}</div><div style="font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;margin-bottom:5px;">${c.title}</div><div style="font-size:11.5px;color:var(--gray2);line-height:1.5;">${c.desc}</div></div>`).join('');
+}
+
+function renderPropCards(){
+  const cards=[{icon:'📋',title:'Project Scope',desc:'Detailed breakdown of every feature'},{icon:'💰',title:'Exact Pricing',desc:'Fixed quote, no hidden charges'},{icon:'📅',title:'Timeline',desc:'Day-by-day delivery milestones'},{icon:'⚙️',title:'Tech Stack',desc:'Technologies we will use'},{icon:'🔄',title:'Revision Plan',desc:'Rounds of revisions included'},{icon:'📞',title:'Support Plan',desc:'Post-launch support options'}];
+  document.getElementById('prop-cards').innerHTML=cards.map(c=>`<div style="background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:14px;"><div style="font-size:22px;margin-bottom:5px;">${c.icon}</div><div style="font-weight:700;font-size:12px;margin-bottom:3px;">${c.title}</div><div style="font-size:11px;color:var(--gray2);line-height:1.5;">${c.desc}</div></div>`).join('');
+}
+
+// Mobile
+if(window.innerWidth<=900)document.getElementById('menu-btn').style.display='block';
+document.addEventListener('click',function(e){const s=document.getElementById('sidebar'),m=document.getElementById('menu-btn');if(window.innerWidth<=900&&s.classList.contains('open')&&!s.contains(e.target)&&e.target!==m)s.classList.remove('open');});
+
+// INIT
+renderCatalog();populateSubSelect();renderSubs();renderPricingPub();renderManagePricing();renderTechStack();renderYT();renderPropCards();
+</script>
+</body>
+</html>
